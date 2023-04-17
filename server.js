@@ -297,6 +297,10 @@ app.get('/ph/category/:category/video/:key.m3u8', async (req, res) => {
   }
 })
 
+app.get('/health', async (req, res) => {
+  res.send('OK')
+})
+
 app.listen(port, () => {
   console.log(`Listening on port ${port}`)
   // list.refreshCache()
