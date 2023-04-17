@@ -1,0 +1,46 @@
+Arguments: 
+  /Users/paul/.nvm/versions/node/v16.14.0/bin/node /usr/local/bin/yarn
+
+PATH: 
+  /Users/paul/miniconda3/bin:/Users/paul/miniconda3/condabin:/Users/paul/.nvm/versions/node/v16.14.0/bin:/usr/local/opt/curl-openssl/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/share/dotnet:/opt/X11/bin:~/.dotnet/tools:/Library/Apple/usr/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Users/paul/bin
+
+Yarn version: 
+  1.22.4
+
+Node version: 
+  16.14.0
+
+Platform: 
+  darwin x64
+
+Trace: 
+  SyntaxError: /Users/paul/Documents/workspace/mine/m3u/2deploy/package.json: Unexpected token } in JSON at position 302
+      at JSON.parse (<anonymous>)
+      at /usr/local/lib/node_modules/yarn/lib/cli.js:1625:59
+      at Generator.next (<anonymous>)
+      at step (/usr/local/lib/node_modules/yarn/lib/cli.js:310:30)
+      at /usr/local/lib/node_modules/yarn/lib/cli.js:321:13
+
+npm manifest: 
+  {
+    "name": "m3u",
+    "version": "1.0.0",
+    "main": "server.js",
+    "license": "MIT",
+    "type": "module",
+    "scripts": {
+      "serve": "forever start ./server.js",
+      "stop": "forever stop ./server.js"
+    },
+    "dependencies": {
+      "axios": "^0.27.2",
+      "express": "^4.18.1",
+      "forever": "^4.0.3",
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
