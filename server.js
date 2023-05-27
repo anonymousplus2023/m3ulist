@@ -12,7 +12,7 @@ import { getCategory, getVideoUrls } from './worker.js';
 const app = express()
 const port = 3000
 
-const SERVER_URL = `http://localhost:${port}`
+const SERVER_URL = `https://m3ulist.cyclic.app`
 
 const toM3U = (items) => {
   const converted = items.map(i => {
