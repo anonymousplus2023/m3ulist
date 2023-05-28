@@ -282,6 +282,9 @@ app.get('/ph/:category/index.m3u', async (req, res) => {
   const baseUrl = `${req.protocol}://${req.headers.host}`
   const pagesCount = req.query.pages || 1
 
+  console.log('>> req.protocol', req.protocol, req.secure, req.headers['x-forwarded-proto'])
+
+
   const items = []
   const uniq = new Set()
   for (let i = 0; i < pagesCount; i++) {
@@ -307,6 +310,8 @@ app.get('/ph/parallel/:category/index.m3u', async (req, res) => {
   const category = req.params.category
   const baseUrl = `${req.protocol}://${req.headers.host}`
   const pagesCount = req.query.pages || 1
+
+  console.log('>> req.protocol', req.protocol, req.secure, req.headers['x-forwarded-proto'])
 
   const items = []
   const uniq = new Set()
