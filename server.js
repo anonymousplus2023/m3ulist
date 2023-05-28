@@ -303,6 +303,38 @@ app.get('/ph/:category/index.m3u', async (req, res) => {
   res.send(data)
 })
 
+app.get('/ph/parallel/:category/index.m3u', async (req, res) => {  
+  const category = req.params.category
+  const baseUrl = `${req.protocol}://${req.headers.host}`
+  const pagesCount = req.query.pages || 1
+
+  const items = []
+  const uniq = new Set()
+  const allPagesRequests = []
+  for (let i = 0; i < pagesCount; i++) {
+    allPagesRequests.push(list.requestCategory(category, i + 1))    
+  }
+
+  const responses = await Promise.all(allPagesRequests)
+
+  responses.forEach(videos => {
+    videos.forEach(v => {
+      if (!uniq.has(v.link)) {
+        uniq.add(v.link)
+
+        const name = v.title
+        const key = getKeyFromLink(v.link)
+        const path = `/ph/category/${category}/video/${key}.m3u8`
+        items.push({ name, path })
+      }
+    })
+  })
+
+  const data = toM3U(baseUrl, items)
+
+  res.send(data)
+})
+
 app.get('/ph/category/:category/video/:key.m3u8', async (req, res) => {
   const category = req.params.category
   const { key } = req.params
