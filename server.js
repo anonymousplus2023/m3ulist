@@ -279,11 +279,9 @@ app.get('/ph/category/:category/page/:page/index.m3u8', async (req, res) => {
 
 app.get('/ph/:category/index.m3u', async (req, res) => {  
   const category = req.params.category
-  const baseUrl = `${req.protocol}://${req.headers.host}`
+  const protocol = req.headers['x-forwarded-proto'] || req.protocol
+  const baseUrl = `${protocol}://${req.headers.host}`
   const pagesCount = req.query.pages || 1
-
-  console.log('>> req.protocol', req.protocol, req.secure, req.headers['x-forwarded-proto'])
-
 
   const items = []
   const uniq = new Set()
@@ -308,10 +306,10 @@ app.get('/ph/:category/index.m3u', async (req, res) => {
 
 app.get('/ph/parallel/:category/index.m3u', async (req, res) => {  
   const category = req.params.category
-  const baseUrl = `${req.protocol}://${req.headers.host}`
-  const pagesCount = req.query.pages || 1
 
-  console.log('>> req.protocol', req.protocol, req.secure, req.headers['x-forwarded-proto'])
+  const protocol = req.headers['x-forwarded-proto'] || req.protocol
+  const baseUrl = `${protocol}://${req.headers.host}`
+  const pagesCount = req.query.pages || 1
 
   const items = []
   const uniq = new Set()
