@@ -94,7 +94,7 @@ class List {
     console.log('')
     console.log('*** Refresh cache ***')
     for (const category of this.categories) {
-      const categoryData = await this.fetchCategoryIfNeeded(category, 2, 1)
+      const categoryData = await this.fetchCategory(category, 2, 1)
       if (!categoryData) { return }
 
       const firstVideo = categoryData[0]
@@ -156,16 +156,10 @@ class List {
     }
   }
 
-  fetchCategoryIfNeeded = async (category, pages, priority) => {
-    const cachedCategory = this.cache.getCachedItem(category, this.categoryCacheTime)
-    if (cachedCategory) {
-      console.log('CACHED', category, cachedCategory.length)
-      return cachedCategory
-    } else {
-      const fetchedCaregory = await this.getCategoryItems(category, pages, priority)
-      this.cache.setCacheItem(category, fetchedCaregory)
-      return fetchedCaregory
-    }
+  fetchCategory = async (category, pages, priority) => {
+    const fetchedCaregory = await this.getCategoryItems(category, pages, priority)
+    this.cache.setCacheItem(category, fetchedCaregory)
+    return fetchedCaregory
   }
 
   fetchVideoIfNeeded = async (key, priority, source) => {
@@ -181,7 +175,7 @@ class List {
   }
 
   requestCategory = async (category, pages) => {
-    return await this.fetchCategoryIfNeeded(category, pages, 10)
+    return await this.fetchCategory(category, pages, 10)
   }
 
   requestVideo = async (category, key) => {
