@@ -10,13 +10,12 @@ import { getCategory, getVideoUrls } from './worker.js';
 // done
 
 const app = express()
-const port = 3000
+const port = process.env.PORT || 3000
 
-const SERVER_URL = `https://m3ulist.cyclic.app`
 
-const toM3U = (items) => {
+const toM3U = (baseUrl, items) => {
   const converted = items.map(i => {
-    const url = i.url ? i.url : `${SERVER_URL}${i.path}`
+    const url = i.url ? i.url : `${baseUrl}${i.path}`
     return `#EXTINF:-1,${i.name}\n${url}\n`
   }).join('')
   return `#EXTM3U\n${converted}`
@@ -85,7 +84,7 @@ class List {
   categories = ['MOST_VIEWED', 'HOTTEST', 'TOP_RATED']
   // categories = ['HOTTEST']
 
-  categoryCacheTime = 12 * 3600 * 1000
+  categoryCacheTime = 1
   videoCacheTime = 0.5 * 3600 * 1000
 
   // queue = new PQueue({ concurrency: 1 })
@@ -242,6 +241,7 @@ app.use((req, res, next) => {
 app.get('/ph/category/:category/page/:page/index.m3u8', async (req, res) => {  
   const category = req.params.category
   const page = parseInt(req.params.page)
+  const baseUrl = `${req.protocol}://${req.headers.host}`
 
   const videos = await list.requestCategory(category, page)
   if (!videos) {
@@ -272,7 +272,33 @@ app.get('/ph/category/:category/page/:page/index.m3u8', async (req, res) => {
     // prev
   ]
 
-  const data = toM3U(items)
+  const data = toM3U(baseUrl, items)
+
+  res.send(data)
+})
+
+app.get('/ph/:category/index.m3u', async (req, res) => {  
+  const category = req.params.category
+  const baseUrl = `${req.protocol}://${req.headers.host}`
+  const pagesCount = req.query.pages || 1
+
+  const items = []
+  const uniq = new Set()
+  for (let i = 0; i < pagesCount; i++) {
+    const videos = await list.requestCategory(category, i + 1)
+    videos.forEach(v => {
+      if (!uniq.has(v.link)) {
+        uniq.add(v.link)
+
+        const name = v.title
+        const key = getKeyFromLink(v.link)
+        const path = `/ph/category/${category}/video/${key}.m3u8`
+        items.push({ name, path })
+      }
+    })
+  }
+
+  const data = toM3U(baseUrl, items)
 
   res.send(data)
 })
