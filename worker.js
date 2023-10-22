@@ -91,69 +91,39 @@ const getCategoryItems = async (url) => {
 }
 
 export const getVideoUrls = async (url) => {
-  let t1 = Date.now()
+  let t1 = Date.now();
 
-  let source
+  let source;
   try {
-    const res = await axios.get(url)
-    source = res.data
+    const res = await axios.get(url);
+    source = res.data;
   } catch (error) {
-    console.log('getVideoUrls error', error)
-    return
+    console.log("getVideoUrls error", error);
+    return;
   }
 
-  console.log(`getVideoUrls: get TOOK ${Date.now() - t1} ms`)
-  t1 = Date.now()
-  
+  console.log(`getVideoUrls: get TOOK ${Date.now() - t1} ms`);
+
+  t1 = Date.now();
+
   let rsl = {};
 
   if (true) {
-    t1 = Date.now()
-    source = source.match(/        \/\/ var nextVideoObject.*$\n^(.*)$/gm)[0]
-    console.log(`getVideoUrls: limitedSource TOOK ${Date.now() - t1} ms`)
+    t1 = Date.now();
+    source = source.match(/var flashvars_.* = ({.*);$/m)[1];
+    console.log(`getVideoUrls: limitedSource TOOK ${Date.now() - t1} ms`);
 
-    const matches = source.match(/(?<=\*\/)\w+/g);
-    console.log(`getVideoUrls: match TOOK ${Date.now() - t1} ms`)
+    const data = JSON.parse(source);
+    const download_urls = data.mediaDefinitions.reduce((acc, d) => {
+      acc[`${d.quality}P`] = d.videoUrl;
+      return acc;
+    }, {});
 
-  t1 = Date.now()
+    console.log(">>> download_urls", download_urls);
 
-    const urls = [];
-    for (const match of matches) {
-      const regex = new RegExp('(?<=' + match + '=")[^;]+(?=")', 'g');
-      const found = source.match(regex)[0]
-      const value = found.replace(/[" +]/g, '');
-
-      if (value.startsWith('https')) {
-        if (urls.length === 4) {
-          break;
-        }
-
-        urls.push(value);
-      } else {
-        urls[urls.length - 1] += value;
-      }
-    }
-
-    console.log(`getVideoUrls: for match TOOK ${Date.now() - t1} ms`)
-  t1 = Date.now()
-    
-
-    rsl = urls.map(x => {
-      // Sometime PH does not provide a resolution, meaning the link is broken
-      const resolution = x.match(/(?<=_|\/)\d*P(?=_)/g);
-      return resolution !== null && resolution.length > 0 ? [x.match(/(?<=_|\/)\d*P(?=_)/g)[0], x] : null;
-    }).filter(x => x !== null);
-
-    rsl = Object.fromEntries(rsl);
-
-    console.log(`getVideoUrls: map TOOK ${Date.now() - t1} ms`)
-  t1 = Date.now()
-
+    return { download_urls };
   }
-  return {
-    download_urls: Object.keys(rsl).length > 0 ? rsl : null
-  };
-}
+};
 
 // export const getTaskWorker = (task) => {
 //   return new Promise((resolve, reject) => {
